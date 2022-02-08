@@ -11,6 +11,11 @@
 ################################################################################
 # WIND TURBINE
 ################################################################################
+
+import GeometricTools
+gt = GeometricTools
+import PyPlot as plt
+
 """
 `generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
                               hub_name::String, tower_name::String;
@@ -29,7 +34,7 @@ generate these files.
 function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
                               hub_name::String, tower_name::String;
                               nblades::Int64=3, data_path::String=def_data_path,
-                              save_path=nothing, file_name="windturbine",
+                              save_path="/Users/dprocell/WF/files", file_name="windturbine",
                               paraview=true,
                               rot=nothing, random_rot::Bool=true, pitch=70)
 
@@ -38,39 +43,41 @@ function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
   hub_grid, Rhub, Thub = JLD.load(joinpath(data_path, hub_name*".jld"),
                                                     "hub_grid", "Rhub", "Thub")
   tower_grid = JLD.load(joinpath(data_path, tower_name*".jld"), "tower_grid")
-  # Scales dimensions by Rtip
+#   # Scales dimensions by Rtip
   blade_grid.orggrid.nodes .*= Rtip
   hub_grid.orggrid.nodes .*= Rtip
   for i in 1:size(tower_grid.orggrid.nodes, 2)
-    # println([Rtip, h, Rtip])
+#     # println([Rtip, h, Rtip])
     tower_grid.orggrid.nodes[:, i] .*= [Rtip, h, Rtip]
-      # println(tower_grid.orggrid.nodes[:, i])
+#       # println(tower_grid.orggrid.nodes[:, i])
   end
   Rhub *= Rtip
   Thub *= Rtip
 
+  
 
-  # Rotor center
+
+#   # Rotor center
   C = [Thub*5/12, 0, h+Rhub/2]
 
-  # Initiates rotor multigrid
+#   # Initiates rotor multigrid
   rotor = gt.MultiGrid(3)
 
-  # Aligns and add hub to rotor
+#   # Aligns and add hub to rotor
   gt.lintransform!(hub_grid, gt.rotation_matrix(0, 90, 0), zeros(3))
   gt.addgrid(rotor, "hub", hub_grid)
 
-  # Pitches the blade
+#   # Pitches the blade
   gt.lintransform!(blade_grid, gt.rotation_matrix(0, -pitch, 0), zeros(3))
 
-  # Rotates the rotor
+#   # Rotates the rotor
   if rot != nothing
     gt.lintransform!(blade_grid, gt.rotation_matrix(0, 0, rot), zeros(3))
   elseif random_rot
     gt.lintransform!(blade_grid, gt.rotation_matrix(0, 0, rand()*360), zeros(3))
   end
 
-  # Creates every blade and adds them to the rotor
+#   # Creates every blade and adds them to the rotor
   gt.lintransform!(blade_grid, gt.rotation_matrix(0, 0, -90), zeros(3))
   rotM = gt.rotation_matrix(0, 0, 360/nblades)
   for i in 1:nblades
@@ -81,19 +88,19 @@ function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
     gt.lintransform!(blade_grid, rotM, zeros(3))
   end
 
-  # Starts multigrid of the wind turbine
+#   # Starts multigrid of the wind turbine
   windturbine = gt.MultiGrid(3)
 
-  # Aligns and adds tower
+#   # Aligns and adds tower
   gt.lintransform!(tower_grid, gt.rotation_matrix(0, 0, -90), zeros(3))
   gt.addgrid(windturbine, "tower", tower_grid)
 
-  # Translates and adds rotor
-  # gt.lintransform!(rotor, eye(3), C-*[Thub/2, 0, 0])
+#   # Translates and adds rotor
+#   # gt.lintransform!(rotor, eye(3), C-*[Thub/2, 0, 0])
   gt.lintransform!(rotor, eye(3), C)
   gt.addgrid(windturbine, "rotor", rotor)
 
-  if save_path!=nothing
+  if save_path=="/Users/dprocell/WF/files" #had ! before =
     gt.save(windturbine, file_name; path=save_path)
 
     if paraview
@@ -169,7 +176,7 @@ function generate_loft(bscale::Real, b_low::Real, b_up::Real, b_NDIVS::Int64,
                         spline_k::Int64=5, spline_bc::String="extrapolate",
                         spline_s::Real=0.001, verify_spline::Bool=true,
                         # OUTPUT OPTIONS
-                        save_path=nothing, paraview::Bool=true,
+                        save_path="/Users/dprocell/WF/files", paraview::Bool=true,
                         file_name::String="myloft"
                        ) where{T<:Real}
 
@@ -185,10 +192,10 @@ function generate_loft(bscale::Real, b_low::Real, b_up::Real, b_NDIVS::Int64,
   P_max = [1, b_up, 0 ]            # Upper boundary arclength, span, dummy
   loop_dim = 1                     # Loops the arclength dimension
 
-  # Adds dummy division
+#   # Adds dummy division
   NDIVS = [rfl_NDIVS, b_NDIVS, 0]
 
-  # Generates parametric grid
+#   # Generates parametric grid
   grid = gt.Grid(P_min, P_max, NDIVS, loop_dim)
 
 
@@ -299,7 +306,7 @@ function generate_loft(bscale::Real, b_low::Real, b_up::Real, b_NDIVS::Int64,
     tlt_z = tilt_z!=nothing ?  _spl_tlt_z(abs(span)) : 0.0
     point = gt.rotation_matrix(-twist, -tlt_z, 0)*point
 
-    # Places the point relative to LE and scales by span scale
+     # Places the point relative to LE and scales by span scale
     point = [point[1]+le_x, span+point[3], point[2]+le_z]*bscale
 
 
@@ -313,7 +320,7 @@ function generate_loft(bscale::Real, b_low::Real, b_up::Real, b_NDIVS::Int64,
   dimsplit = 2              # Dimension along which to split
   triang_grid = gt.GridTriangleSurface(grid, dimsplit)
 
-  if save_path!=nothing
+  if save_path=="/Users/dprocell/WF/files" #used to be nothing, used to have ! before =
     # Outputs a vtk file
     gt.save(triang_grid, file_name; path=save_path)
 
