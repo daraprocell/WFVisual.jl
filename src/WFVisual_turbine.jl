@@ -16,6 +16,12 @@ import GeometricTools
 gt = GeometricTools
 import PyPlot as plt
 
+
+U = UniformScaling(3);
+B=[1.0 0.0 0.0; 0.0 1.0 0.0 ; 0.0 0.0 1.0];
+A = B*U
+
+
 """
 `generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
                               hub_name::String, tower_name::String;
@@ -64,7 +70,7 @@ function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
   rotor = gt.MultiGrid(3)
 
 #   # Aligns and add hub to rotor
-  gt.lintransform!(hub_grid, gt.rotation_matrix(0, 90, 0), zeros(3))
+  gt.lintransform!(hub_grid, gt.rotation_matrix(0, 90, 0), zeros(3)) #!!
   gt.addgrid(rotor, "hub", hub_grid)
 
 #   # Pitches the blade
@@ -82,25 +88,26 @@ function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
   rotM = gt.rotation_matrix(0, 0, 360/nblades)
   for i in 1:nblades
     this_blade = deepcopy(blade_grid)
-    gt.lintransform!(this_blade, eye(3), [-Thub*5/6, 0, 0])
+    gt.lintransform!(this_blade, A, [-Thub*5/6, 0, 0]) #eye is the problem eye(3)
     gt.addgrid(rotor, "blade$i", this_blade)
 
     gt.lintransform!(blade_grid, rotM, zeros(3))
   end
-
+println("line 96")
 #   # Starts multigrid of the wind turbine
   windturbine = gt.MultiGrid(3)
-
+println("line 99")
 #   # Aligns and adds tower
   gt.lintransform!(tower_grid, gt.rotation_matrix(0, 0, -90), zeros(3))
   gt.addgrid(windturbine, "tower", tower_grid)
-
+println("line 103")
 #   # Translates and adds rotor
-#   # gt.lintransform!(rotor, eye(3), C-*[Thub/2, 0, 0])
-  gt.lintransform!(rotor, eye(3), C)
+  #gt.lintransform!(rotor, A, C-*[Thub/2, 0, 0])
+  gt.lintransform!(rotor, A, C)
   gt.addgrid(windturbine, "rotor", rotor)
 
   if save_path=="/Users/dprocell/WF/files" #had ! before =
+    println("saved files")
     gt.save(windturbine, file_name; path=save_path)
 
     if paraview
@@ -115,7 +122,7 @@ function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
     end
 
   end
-
+  println("line 125")
   return windturbine::gt.MultiGrid
 end
 
