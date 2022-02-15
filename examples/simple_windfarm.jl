@@ -1,4 +1,5 @@
 module_path = splitdir(@__FILE__)[1]            # Path to this file
+#LOAD_PATH = ["/Users/dprocell/WF/WFVisual.jl/examples"]
 
 # NOTE: In Julia v0.7, JLD throws the error "Cannot `convert` an object of type
 # getfield(JLD, Symbol("##JLD.AssociativeWrapper" unless, imported outside of
@@ -6,8 +7,9 @@ module_path = splitdir(@__FILE__)[1]            # Path to this file
 # JLD must be imported before GeometricTools to be able to read Grid JLDs.
 # Also, notice that `generate_windfarm(...)` takes an abnormal long time to run
 # in v0.7.
-import JLD
 
+import JLD
+import LinearAlgebra
 # Load WFVisual module
 import WFVisual
 wfv=WFVisual
@@ -17,11 +19,11 @@ import GeometricTools
 gt=GeometricTools
 
 # Data path with geometry JLDs
-if Int(VERSION.major)==0 && Int(VERSION.minor)==6   # Case of Julia v0.6
-    data_path = joinpath(module_path, "../data/")
-else                                                # Case of Julia v0.7
-    data_path = joinpath(module_path, "../datav07/")
-end
+#if Int(VERSION.major)==0 && Int(VERSION.minor)==6   # Case of Julia v0.6
+ #   data_path = joinpath(module_path, "../data/")
+#else                                                # Case of Julia v0.7
+data_path = joinpath(module_path, "../datav07/")
+#end
 
 # Create save path where to store vtks
 save_path = "temps/windfarm06/"         # Save path of this example
