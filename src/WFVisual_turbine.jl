@@ -40,7 +40,7 @@ generate these files.
 function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
                               hub_name::String, tower_name::String;
                               nblades::Int64=3, data_path::String=def_data_path,
-                              save_path="/Users/dprocell/WF/files", file_name="windturbine",
+                              save_path=nothing, file_name="windturbine",
                               paraview=true,
                               rot=nothing, random_rot::Bool=true, pitch=70)
 
@@ -106,10 +106,8 @@ println("line 103")
   gt.lintransform!(rotor, A, C)
   gt.addgrid(windturbine, "rotor", rotor)
 
-  if save_path=="/Users/dprocell/WF/files" #had ! before =
-    println("saved files")
-    gt.save(windturbine, file_name; path=save_path)
-
+    if save_path !== nothing #had ! before =
+    gt.save(windturbine, file_name; path=save_path, format="vtk")
     if paraview
       strn = ""
       strn *= file_name*"_tower.vtk;"
@@ -327,9 +325,9 @@ function generate_loft(bscale::Real, b_low::Real, b_up::Real, b_NDIVS::Int64,
   dimsplit = 2              # Dimension along which to split
   triang_grid = gt.GridTriangleSurface(grid, dimsplit)
 
-  if save_path=="/Users/dprocell/WF/files" #used to be nothing, used to have ! before =
+  if save_path !== nothing #used to be nothing, used to have ! before =
     # Outputs a vtk file
-    gt.save(triang_grid, file_name; path=save_path)
+    gt.save(triang_grid, file_name; path=save_path, format="vtk")
 
     # Outputs a jld file
     JLD.save(joinpath(save_path, "$file_name.jld"), "triang_grid", triang_grid)
