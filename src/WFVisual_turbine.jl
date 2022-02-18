@@ -17,9 +17,9 @@ gt = GeometricTools
 import PyPlot as plt
 
 
-U = UniformScaling(3);
-B=[1.0 0.0 0.0; 0.0 1.0 0.0 ; 0.0 0.0 1.0];
-A = B*U
+U = UniformScaling(1);
+identity_matrix=[1.0 0.0 0.0; 0.0 1.0 0.0 ; 0.0 0.0 1.0];
+A = identity_matrix*U
 
 
 """
@@ -64,7 +64,10 @@ function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
 
 
 #   # Rotor center
-  C = [Thub*5/12, 0, h+Rhub/2]
+ # Thub denominator controls hub back and forth horizontally 
+  # Rhub denominator controls hub up and down vertically 
+  C = [Thub*5/12, 0, h+Rhub/2] 
+
 
 #   # Initiates rotor multigrid
   rotor = gt.MultiGrid(3)
@@ -106,9 +109,9 @@ println("line 103")
   gt.lintransform!(rotor, A, C)
   gt.addgrid(windturbine, "rotor", rotor)
 
-  if save_path=="/Users/dprocell/WF/files" #had ! before =
+  if save_path!=nothing 
     println("saved files")
-    gt.save(windturbine, file_name; path=save_path)
+    gt.save(windturbine, file_name; path=save_path, format="vtk") #issue here
 
     if paraview
       strn = ""
@@ -327,9 +330,9 @@ function generate_loft(bscale::Real, b_low::Real, b_up::Real, b_NDIVS::Int64,
   dimsplit = 2              # Dimension along which to split
   triang_grid = gt.GridTriangleSurface(grid, dimsplit)
 
-  if save_path=="/Users/dprocell/WF/files" #used to be nothing, used to have ! before =
+  if save_path!=nothing 
     # Outputs a vtk file
-    gt.save(triang_grid, file_name; path=save_path)
+    gt.save(triang_grid, file_name; path=save_path, format="vtk") #issue here?
 
     # Outputs a jld file
     JLD.save(joinpath(save_path, "$file_name.jld"), "triang_grid", triang_grid)
