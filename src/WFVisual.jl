@@ -18,6 +18,7 @@ import CSV
 import Dierckx
 import PyPlot
 import PyCall
+import LinearAlgebra
 
 const plt = PyPlot
 
