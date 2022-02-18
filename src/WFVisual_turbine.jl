@@ -17,7 +17,7 @@ gt = GeometricTools
 import PyPlot as plt
 import LinearAlgebra
 
-A = LinearAlgebra.I(3)
+A = [LinearAlgebra.I(3)]
 
 
 """
@@ -399,5 +399,9 @@ function generate_blade(Rtip::Real, Rhub::Real, r_NDIVS::Int64,
   return generate_loft(Rtip, Rhub/Rtip, 1.0, r_NDIVS, data_chord,
                   data_twist, data_lex, data_lez,
                   airfoils; file_name=blade_name, optargs...)
+end
+
+function test()
+  println("testing")
 end
 # ------------ END OF WIND TURBINE ---------------------------------------------
