@@ -15,11 +15,9 @@
 import GeometricTools
 gt = GeometricTools
 import PyPlot as plt
+import LinearAlgebra
 
-
-U = UniformScaling(1);
-identity_matrix=[1.0 0.0 0.0; 0.0 1.0 0.0 ; 0.0 0.0 1.0];
-A = identity_matrix*U
+A = LinearAlgebra.I(3)
 
 
 """
