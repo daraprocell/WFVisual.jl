@@ -8,8 +8,8 @@ module_path = splitdir(@__FILE__)[1]            # Path to this file
 # Also, notice that `generate_windfarm(...)` takes an abnormal long time to run
 # in v0.7.
 
-import JLD
-import LinearAlgebra
+using JLD
+using LinearAlgebra
 # Load WFVisual module
 import WFVisual
 wfv=WFVisual
@@ -26,7 +26,7 @@ data_path = joinpath(module_path, "../datav07/")
 #end
 
 # Create save path where to store vtks
-save_path = "temps/windfarm06/"         # Save path of this example
+save_path = "temp/"         # Save path of this example
 gt.create_path(save_path, true)
 
 
@@ -64,7 +64,7 @@ nBlades = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 wind_direction = 228.0
 
 yaw = [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
-        0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.] - wind_direction
+        0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.] .- wind_direction
 
 
 # --------------------- PERIMETER AND FLUID DOMAIN -----------------------------
@@ -74,7 +74,7 @@ NDIVSz = 70              # Cells in the geometric z-direction
 
 # Dummy perimeter
 Rper = norm(maximum.([turbine_x, turbine_y]) - minimum.([turbine_x, turbine_y]))/2*3/4
-perimeter_points = Rper*[ [cos(a), sin(a), 0] for a in linspace(0, 2*pi, 179)]
+perimeter_points = Rper*[ [cos(a), sin(a), 0] for a in range(0, 2*pi, 179)]
 
 # Dummy wake function
 wake(X) = 1.0*[cos(wind_direction*pi/180), sin(wind_direction*pi/180), 0]

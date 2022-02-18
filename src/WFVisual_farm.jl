@@ -151,7 +151,7 @@ function generate_perimetergrid(perimeter::Array{Array{T, 1}, 1},
                                   paraview=true
                                 ) where{T<:Real}
   # Error cases
-println("line 154")
+  println("line 154")
   multidiscrtype = Array{Tuple{Float64,Int64,Float64,Bool},1}
   if typeof(NDIVSx)==Int64
     nz = NDIVSz
@@ -398,6 +398,12 @@ end
 
 function M2arr(M::Array{T, 2}) where{T<:Real}
   return [ [p for p in M[i, :]] for i in 1:size(M,1) ]
+end
+
+function test_function()
+  println("HELLOOOO")
+  println("NEW THING")
+  println("EDIT")
 end
 
 # ------------ END OF WIND FARM ------------------------------------------------
