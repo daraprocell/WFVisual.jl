@@ -12,20 +12,20 @@
 # WIND FARM
 ################################################################################
 
-# import JLD
-# import CSV
-# import Dierckx
-# import PyPlot
-# using PyCall
+import JLD
+import CSV
+import Dierckx
+import PyPlot
+using PyCall
 #
-# const plt = PyPlot
+plt = PyPlot
 
 # ------------ FLOW MODULES ----------------------------------------------------
 # https://github.com/byuflowlab/GeometricTools.jl
 # import GeometricTools
 # const gt = GeometricTools
 
-# include("WFVisual_turbine.jl")
+include("WFVisual_turbine.jl")
 
 using PyCall
 
@@ -122,7 +122,7 @@ function generate_layout(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
 
   return windfarm::gt.MultiGrid
 end
-
+println("line125")
 """
 `generate_perimetergrid(perimeter::Array{Array{T, 1}, 1},
                                   NDIVSx, NDIVSy, NDIVSz;
@@ -151,6 +151,7 @@ function generate_perimetergrid(perimeter::Array{Array{T, 1}, 1},
                                   paraview=true
                                 ) where{T<:Real}
   # Error cases
+println("line 154")
   multidiscrtype = Array{Tuple{Float64,Int64,Float64,Bool},1}
   if typeof(NDIVSx)==Int64
     nz = NDIVSz
@@ -163,7 +164,7 @@ function generate_perimetergrid(perimeter::Array{Array{T, 1}, 1},
     error("Expected `NDIVSz` to be type $(Int64) or $MultiDiscrType,"*
             " got $(typeof(NDIVSz)).")
   end
-
+println("line 166")
   # --------- REPARAMETERIZES THE PERIMETER ---------------------------
   org_x = [p[1] for p in perimeter]
   org_y = [p[2] for p in perimeter]
@@ -337,7 +338,7 @@ function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                           NDIVSx=50, NDIVSy=50, NDIVSz=50,
                           z_min="automatic", z_max="automatic",
                           z_off=0.0,
-                          fdom_perimeter::Union{Array{Array{T, 1}}, Void}=nothing,
+                          fdom_perimeter::Union{Array{Array{T, 1}}, Nothing}=nothing,
                           # PERIMETER SPLINE OPTIONS
                           verify_spline::Bool=true,
                           spl_s=0.001, spl_k="automatic",
