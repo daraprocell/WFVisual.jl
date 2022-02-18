@@ -1,3 +1,8 @@
+name = "WFVisual"
+uuid = "0c8cd608-4c21-4cad-b404-a6dd8a88c9ae"
+version = "0.1.0"
+authors = ["Dara Procell <dara.procell@nrel.gov>, PJ Stanley <pj.stanley@nrel.gov>"]
+
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 Dierckx = "39dd38d3-220a-591b-8e3c-4c3a8c710a94"
@@ -5,4 +10,3 @@ JLD = "4138dd39-2aa7-5051-a626-17a0bb65d9c8"
 PkgTemplates = "14b8a8f1-9102-5b29-a752-f990bacb7fe1"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
-WFVisual = "0c8cd608-4c21-4cad-b404-a6dd8a88c9ae"
