@@ -12,6 +12,7 @@ import JLD
 import LinearAlgebra
 # Load WFVisual module
 import WFVisual
+# include("../src/WFVisual_farm.jl")
 wfv=WFVisual
 
 # Load GeometricTools: https://github.com/byuflowlab/GeometricTools.jl
@@ -26,7 +27,7 @@ data_path = joinpath(module_path, "../datav07/")
 #end
 
 # Create save path where to store vtks
-save_path = "temps/windfarm06/"         # Save path of this example
+save_path = "windfarm06/"         # Save path of this example
 gt.create_path(save_path, true)
 
 
@@ -64,7 +65,7 @@ nBlades = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 wind_direction = 228.0
 
 yaw = [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
-        0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.] - wind_direction
+        0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.] .- wind_direction
 
 
 # --------------------- PERIMETER AND FLUID DOMAIN -----------------------------
@@ -73,8 +74,8 @@ NDIVSy = 70              # Cells in the parametric y-direction
 NDIVSz = 70              # Cells in the geometric z-direction
 
 # Dummy perimeter
-Rper = norm(maximum.([turbine_x, turbine_y]) - minimum.([turbine_x, turbine_y]))/2*3/4
-perimeter_points = Rper*[ [cos(a), sin(a), 0] for a in linspace(0, 2*pi, 179)]
+Rper = LinearAlgebra.norm(maximum.([turbine_x, turbine_y]) - minimum.([turbine_x, turbine_y]))/2*3/4
+perimeter_points = Rper*[ [cos(a), sin(a), 0] for a in range(0, 2*pi, 179)] #range used to be linspace
 
 # Dummy wake function
 wake(X) = 1.0*[cos(wind_direction*pi/180), sin(wind_direction*pi/180), 0]
