@@ -17,7 +17,8 @@ gt = GeometricTools
 import PyPlot as plt
 import LinearAlgebra
 
-A = [LinearAlgebra.I(3)]
+# A = LinearAlgebra.I(3)
+A = [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0]
 
 
 """
@@ -94,21 +95,20 @@ function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
 
     gt.lintransform!(blade_grid, rotM, zeros(3))
   end
-println("line 96")
+
 #   # Starts multigrid of the wind turbine
   windturbine = gt.MultiGrid(3)
-println("line 99")
 #   # Aligns and adds tower
   gt.lintransform!(tower_grid, gt.rotation_matrix(0, 0, -90), zeros(3))
   gt.addgrid(windturbine, "tower", tower_grid)
-println("line 103")
-#   # Translates and adds rotor
+
+  #   # Translates and adds rotor
   #gt.lintransform!(rotor, A, C-*[Thub/2, 0, 0])
   gt.lintransform!(rotor, A, C)
   gt.addgrid(windturbine, "rotor", rotor)
 
   if save_path!=nothing 
-    println("saved files")
+
     gt.save(windturbine, file_name; path=save_path, format="vtk") #issue here
 
     if paraview
@@ -123,7 +123,7 @@ println("line 103")
     end
 
   end
-  println("line 125")
+
   return windturbine::gt.MultiGrid
 end
 

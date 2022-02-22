@@ -151,7 +151,7 @@ function generate_perimetergrid(perimeter::Array{Array{T, 1}, 1},
                                   paraview=true
                                 ) where{T<:Real}
   # Error cases
-println("line 154")
+  println("line 154")
   multidiscrtype = Array{Tuple{Float64,Int64,Float64,Bool},1}
   if typeof(NDIVSx)==Int64
     nz = NDIVSz
@@ -185,8 +185,9 @@ println("line 166")
   #   new_lower = gt.discretize(fun_lower, 0, 1, NDIVSx, 1.0)
   # end
 
-  splt_up = Int(ceil((size(upper[1],1)/2)))
+  splt_up = Int(ceil((size(upper[1],1)/2))) #creating the circle
   splt_low = Int(ceil((size(lower[1],1)/2)))
+
 
   # Splits the perimeter into four faces
   upper1 = [[x for x in upper[1][1:splt_up]], [y for y in upper[2][1:splt_up]]]
@@ -195,13 +196,13 @@ println("line 166")
   lower2 = [[x for x in lower[1][splt_low:end]], [y for y in lower[2][splt_low:end]]]
 
   # Parameterize both sides independently
-  fun_upper1 = gt.parameterize(upper1[1], upper1[2], zeros(upper1[1]); inj_var=1,
+  fun_upper1 = gt.parameterize(upper1[1], upper1[2], zeros(size(upper1[1])); inj_var=1,
                                               s=spl_s, kspl=spl_k, atol=atol)
-  fun_upper2 = gt.parameterize(upper2[1], upper2[2], zeros(upper2[1]); inj_var=1,
+  fun_upper2 = gt.parameterize(upper2[1], upper2[2], zeros(size(upper2[1])); inj_var=1,
                                               s=spl_s, kspl=spl_k, atol=atol)
-  fun_lower1 = gt.parameterize(lower1[1], lower1[2], zeros(lower1[1]); inj_var=1,
+  fun_lower1 = gt.parameterize(lower1[1], lower1[2], zeros(size(lower1[1])); inj_var=1,
                                               s=spl_s, kspl=spl_k, atol=atol)
-  fun_lower2 = gt.parameterize(lower2[1], lower2[2], zeros(lower2[1]); inj_var=1,
+  fun_lower2 = gt.parameterize(lower2[1], lower2[2], zeros(size(lower2[1])); inj_var=1,
                                               s=spl_s, kspl=spl_k, atol=atol)
   # Discretizes both sides
   if NDIVSx==multidiscrtype
@@ -301,7 +302,7 @@ println("line 166")
   gt.transform3!(param_grid, my_space_transform)
 
   if save_path!=nothing
-    gt.save(param_grid, file_name; path=save_path)
+    gt.save(param_grid, file_name; path=save_path, format="vtk")
 
     if paraview
       strn = file_name*".vtk"
@@ -344,7 +345,7 @@ function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                           spl_s=0.001, spl_k="automatic",
                           # FILE OPTIONS
                           save_path=nothing, file_name="mywindfarm",
-                          paraview=true, num=nothing
+                          paraview=false, num=nothing
                          ) where{T<:Real}
 
   windfarm = generate_layout(D, H, N, x, y, z, glob_yaw;
@@ -371,9 +372,9 @@ function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
 
 
   if save_path!=nothing
-    gt.save(windfarm, file_name; path=save_path, num=num)
-    gt.save(perimeter_grid, file_name*"_perimeter"; path=save_path, num=num)
-    gt.save(fdom, file_name*"_fdom"; path=save_path, num=num)
+    gt.save(windfarm, file_name; path=save_path, num=num, format="vtk")
+    gt.save(perimeter_grid, file_name*"_perimeter"; path=save_path, num=num, format="vtk")
+    gt.save(fdom, file_name*"_fdom"; path=save_path, num=num, format="vtk")
 
     if paraview
       strn = ""
@@ -398,6 +399,12 @@ end
 
 function M2arr(M::Array{T, 2}) where{T<:Real}
   return [ [p for p in M[i, :]] for i in 1:size(M,1) ]
+end
+
+function test_function()
+  println("HELLOOOO")
+  println("NEW THING")
+  println("EDIT")
 end
 
 # ------------ END OF WIND FARM ------------------------------------------------

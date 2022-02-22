@@ -8,8 +8,8 @@ module_path = splitdir(@__FILE__)[1]            # Path to this file
 # Also, notice that `generate_windfarm(...)` takes an abnormal long time to run
 # in v0.7.
 
-import JLD
-import LinearAlgebra
+using JLD
+using LinearAlgebra
 # Load WFVisual module
 import WFVisual
 # include("../src/WFVisual_farm.jl")
@@ -27,7 +27,7 @@ data_path = joinpath(module_path, "../datav07/")
 #end
 
 # Create save path where to store vtks
-save_path = "windfarm06/"         # Save path of this example
+save_path = "temp/"         # Save path of this example
 gt.create_path(save_path, true)
 
 
@@ -74,8 +74,8 @@ NDIVSy = 70              # Cells in the parametric y-direction
 NDIVSz = 70              # Cells in the geometric z-direction
 
 # Dummy perimeter
-Rper = LinearAlgebra.norm(maximum.([turbine_x, turbine_y]) - minimum.([turbine_x, turbine_y]))/2*3/4
-perimeter_points = Rper*[ [cos(a), sin(a), 0] for a in range(0, 2*pi, 179)] #range used to be linspace
+Rper = norm(maximum.([turbine_x, turbine_y]) - minimum.([turbine_x, turbine_y]))/2*3/4
+perimeter_points = Rper*[ [cos(a), sin(a), 0] for a in range(0, 2*pi, 179)]
 
 # Dummy wake function
 wake(X) = 1.0*[cos(wind_direction*pi/180), sin(wind_direction*pi/180), 0]
@@ -89,6 +89,6 @@ wfv.generate_windfarm(rotor_diameter, hub_height, nBlades,
                                 perimeter_points, wake;
                                 NDIVSx=NDIVSx, NDIVSy=NDIVSy, NDIVSz=NDIVSz,
                                 save_path=save_path, spl_s=0.01,
-                                data_path=data_path);
+                                data_path=data_path, paraview=true);
 
 nothing
