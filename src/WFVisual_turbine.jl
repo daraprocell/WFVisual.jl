@@ -123,7 +123,6 @@ function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
     end
 
   end
-
   return windturbine::gt.MultiGrid
 end
 

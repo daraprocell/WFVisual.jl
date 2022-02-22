@@ -74,7 +74,7 @@ NDIVSz = 70              # Cells in the geometric z-direction
 
 # Dummy perimeter
 Rper = norm(maximum.([turbine_x, turbine_y]) - minimum.([turbine_x, turbine_y]))/2*3/4
-perimeter_points = Rper*[ [cos(a), sin(a), 0] for a in range(0, 2*pi, 179)]
+perimeter_points = Rper.*[ [cos(a), sin(a), 0] for a in range(0, 2*pi, 179)]
 
 # Dummy wake function
 wake(X) = 1.0*[cos(wind_direction*pi/180), sin(wind_direction*pi/180), 0]
@@ -88,6 +88,6 @@ wfv.generate_windfarm(rotor_diameter, hub_height, nBlades,
                                 perimeter_points, wake;
                                 NDIVSx=NDIVSx, NDIVSy=NDIVSy, NDIVSz=NDIVSz,
                                 save_path=save_path, spl_s=0.01,
-                                data_path=data_path);
+                                data_path=data_path, paraview=true);
 
 nothing
