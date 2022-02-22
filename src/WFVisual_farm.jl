@@ -315,18 +315,18 @@ end
 function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                           x::Array{T,1}, y::Array{T,1}, z::Array{T,1},
                           glob_yaw::Array{T,1}, perimeter::Array{T, 2},
-                          wake; optargs...
+                          fdom; optargs...
                          ) where{T<:Real}
 
     _perimeter = M2arr(perimeter)
-    return generate_windfarm(D, H, N, x, y, z, glob_yaw, _perimeter, wake;
+    return generate_windfarm(D, H, N, x, y, z, glob_yaw, _perimeter, fdom;
                                                                     optargs...)
 end
 
 function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                           x::Array{T,1}, y::Array{T,1}, z::Array{T,1},
                           glob_yaw::Array{T,1}, perimeter::Array{Array{T, 1}},
-                          wake;
+                          fdom;
                           # TURBINE GEOMETRY OPTIONS
                           hub::Array{String,1}=String[],
                           tower::Array{String,1}=String[],
@@ -336,7 +336,6 @@ function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                           NDIVSx=50, NDIVSy=50, NDIVSz=50,
                           z_min="automatic", z_max="automatic",
                           z_off=0.0,
-                          fdom_perimeter::Union{Array{Array{T, 1}}, Nothing}=nothing,
                           # PERIMETER SPLINE OPTIONS
                           verify_spline::Bool=true,
                           spl_s=0.001, spl_k="automatic",
@@ -353,19 +352,6 @@ function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                                      z_min=z_off, z_max=z_off,
                                       verify_spline=verify_spline, spl_s=spl_s,
                                       spl_k=spl_k, save_path=nothing)
-
-  _zmin = z_min=="automatic" ? 0 : z_min
-  _zmax = z_max=="automatic" ? maximum(H) + 1.25*maximum(D)/2 : z_max
-  fdom = generate_perimetergrid(fdom_perimeter != nothing ? fdom_perimeter : perimeter,
-                                    NDIVSx, NDIVSy, NDIVSz;
-                                    z_min=_zmin+z_off, z_max=_zmax+z_off,
-                                    verify_spline=false,
-                                    spl_s=spl_s, spl_k=spl_k,
-                                    save_path=nothing,
-                                  )
-
-
-  gt.calculate_field(fdom, wake, "wake", "vector", "node")
 
 
   if save_path!=nothing

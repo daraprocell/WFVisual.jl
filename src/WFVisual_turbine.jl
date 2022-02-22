@@ -17,9 +17,7 @@ gt = GeometricTools
 import PyPlot as plt
 import LinearAlgebra
 
-# A = LinearAlgebra.I(3)
 A = [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0]
-
 
 """
 `generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
