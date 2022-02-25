@@ -39,7 +39,8 @@ function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
                               nblades::Int64=3, data_path::String=def_data_path,
                               save_path=nothing, file_name="windturbine",
                               paraview=true,
-                              rot=nothing, random_rot::Bool=true, pitch=70)
+                              rot=nothing, random_rot::Bool=true, pitch=70,
+                              time_step=nothing)
 
   # Read gridded geometries
   blade_grid = JLD.load(joinpath(data_path, blade_name*".jld"), "blade_grid")
@@ -50,9 +51,7 @@ function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
   blade_grid.orggrid.nodes .*= Rtip
   hub_grid.orggrid.nodes .*= Rtip
   for i in 1:size(tower_grid.orggrid.nodes, 2)
-#     # println([Rtip, h, Rtip])
     tower_grid.orggrid.nodes[:, i] .*= [Rtip, h, Rtip]
-#       # println(tower_grid.orggrid.nodes[:, i])
   end
   Rhub *= Rtip
   Thub *= Rtip
@@ -71,7 +70,11 @@ function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
 
 #   # Aligns and add hub to rotor
   gt.lintransform!(hub_grid, gt.rotation_matrix(0, 90, 0), zeros(3)) #!!
-  gt.addgrid(rotor, "hub", hub_grid)
+  if time_step != nothing
+    gt.addgrid(rotor, "hub_$time_step", hub_grid)
+  else
+    gt.addgrid(rotor, "hub", hub_grid)
+  end
 
 #   # Pitches the blade
   gt.lintransform!(blade_grid, gt.rotation_matrix(0, -pitch, 0), zeros(3))
@@ -89,7 +92,11 @@ function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
   for i in 1:nblades
     this_blade = deepcopy(blade_grid)
     gt.lintransform!(this_blade, A, [-Thub*5/6, 0, 0]) #eye is the problem eye(3)
-    gt.addgrid(rotor, "blade$i", this_blade)
+    if time_step != nothing
+      gt.addgrid(rotor, "blade$i"*"_$time_step", this_blade)
+    else
+      gt.addgrid(rotor, "blade$i", this_blade)
+    end
 
     gt.lintransform!(blade_grid, rotM, zeros(3))
   end
@@ -98,7 +105,11 @@ function generate_windturbine(Rtip::Float64, h::Float64, blade_name::String,
   windturbine = gt.MultiGrid(3)
 #   # Aligns and adds tower
   gt.lintransform!(tower_grid, gt.rotation_matrix(0, 0, -90), zeros(3))
-  gt.addgrid(windturbine, "tower", tower_grid)
+  if time_step != nothing
+    gt.addgrid(windturbine, "tower_$time_step", tower_grid)
+  else
+    gt.addgrid(windturbine, "tower", tower_grid)
+  end
 
   #   # Translates and adds rotor
   #gt.lintransform!(rotor, A, C-*[Thub/2, 0, 0])
