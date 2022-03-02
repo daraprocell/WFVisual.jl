@@ -1,5 +1,5 @@
 module_path = splitdir(@__FILE__)[1]            # Path to this file
-#LOAD_PATH = ["/Users/dprocell/WF/WFVisual.jl/examples"]
+
 
 # NOTE: In Julia v0.7, JLD throws the error "Cannot `convert` an object of type
 # getfield(JLD, Symbol("##JLD.AssociativeWrapper" unless, imported outside of
@@ -8,7 +8,7 @@ module_path = splitdir(@__FILE__)[1]            # Path to this file
 # Also, notice that `generate_windfarm(...)` takes an abnormal long time to run
 # in v0.7.
 
-import WFVisual
+import WFVisualr                
 wfv=WFVisual
 
 # Load GeometricTools: https://github.com/byuflowlab/GeometricTools.jl
@@ -29,6 +29,7 @@ data_path = joinpath(module_path, "../datav07/")
 save_path = "turbine/"         # Save path of this example
 gt.create_path(save_path, true)
 
+# 199 time steps
 N = 200
 rotation_angle = range(0,720,length=N)
 for i=1:N

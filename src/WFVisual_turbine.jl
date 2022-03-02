@@ -408,4 +408,9 @@ function generate_blade(Rtip::Real, Rhub::Real, r_NDIVS::Int64,
                   data_twist, data_lex, data_lez,
                   airfoils; file_name=blade_name, optargs...)
 end
+
+
+function test()
+  println("testing")
+end
 # ------------ END OF WIND TURBINE ---------------------------------------------
