@@ -12,11 +12,7 @@ using JLD
 using LinearAlgebra
 # Load WFVisual module
 import WFVisual
-<<<<<<< HEAD
-# include("../src/WFVisual_farm.jl")
-=======
 using Statistics
->>>>>>> 3fd8c6673b4cbdb5a327726d5da57c0ff0fe928e
 wfv=WFVisual
 
 # Load GeometricTools: https://github.com/byuflowlab/GeometricTools.jl
@@ -153,10 +149,6 @@ wfv.generate_windfarm(rotor_diameter, hub_height, nBlades,
                                 perimeter_points, fdom;
                                 NDIVSx=NDIVSx, NDIVSy=NDIVSy, NDIVSz=NDIVSz,
                                 save_path=save_path, spl_s=0.01,
-<<<<<<< HEAD
-                                data_path=data_path, paraview=true);
-=======
                                 data_path=data_path, paraview=false);
->>>>>>> 3fd8c6673b4cbdb5a327726d5da57c0ff0fe928e
 
 nothing

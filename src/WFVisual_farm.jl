@@ -88,22 +88,55 @@ function generate_layout(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
   # Generates layout
   windfarm = gt.MultiGrid(3)
 
+
+# D = 200.0
+# H = 150.0
+# nblades = 3
+
+# wfv = WFVisual
+
+# blade = "NREL5MW"
+# hub = "hub"
+# tower = "tower1"
+
+# module_path = splitdir(@__FILE__)[1]
+# data_path = joinpath(module_path, "../datav07/")
+
+# save_path = "turbine/"         # Save path of this example
+# gt.create_path(save_path, true)
+
+# N = 200
+# rotation_angle = range(0,720,length=N)
+# for i=1:N
+#     wind_turbine = wfv.generate_windturbine(D/2, H, blade, hub, tower;
+#                                 nblades=nblades, data_path=data_path,
+#                                 save_path=save_path,file_name="windturbine",
+#                                 paraview=false, rot=rotation_angle[i], pitch=0,
+#                                 time_step=i)
+#end
+
   for i in 1:nturbines
+    N = 200
+    rotation_angle = range(0,720,length=N)
+    for j=1:N
     # Generate wind turbine geometry
     turbine = generate_windturbine(D[i]/2, H[i], blade[i], hub[i], tower[i];
                                     nblades=N[i], data_path=data_path,
-                                    save_path=nothing)
+                                    save_path=nothing, file_name="windturbine", 
+                                    paraview=false, rot=rotation_angle[i], pitch=0,
+                                    time_step=j)
 
     # Places it at the location and orientation
     Oaxis = gt.rotation_matrix(glob_yaw[i], 0, 0)
     gt.lintransform!(turbine, Oaxis, [x[i], y[i], z[i]])
 
     # Adds it to the farm
-    gt.addgrid(windfarm, "turbine$i", turbine)
+    gt.addgrid(windfarm, "turbine$i", turbine) #grid turbine already exists?
+    end
   end
 
   if save_path!=nothing
-    gt.save(windfarm, file_name; path=save_path, format="vtk")
+    gt.save(windfarm, file_name; path=save_path)
 
     if paraview
       strn = ""
@@ -122,7 +155,7 @@ function generate_layout(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
 
   return windfarm::gt.MultiGrid
 end
-println("line125")
+println("line 158")
 """
 `generate_perimetergrid(perimeter::Array{Array{T, 1}, 1},
                                   NDIVSx, NDIVSy, NDIVSz;
@@ -151,6 +184,7 @@ function generate_perimetergrid(perimeter::Array{Array{T, 1}, 1},
                                   paraview=true
                                 ) where{T<:Real}
   # Error cases
+  println("line 187")
   multidiscrtype = Array{Tuple{Float64,Int64,Float64,Bool},1}
   if typeof(NDIVSx)==Int64
     nz = NDIVSz
@@ -163,6 +197,7 @@ function generate_perimetergrid(perimeter::Array{Array{T, 1}, 1},
     error("Expected `NDIVSz` to be type $(Int64) or $MultiDiscrType,"*
             " got $(typeof(NDIVSz)).")
   end
+println("line 200")
   # --------- REPARAMETERIZES THE PERIMETER ---------------------------
   org_x = [p[1] for p in perimeter]
   org_y = [p[2] for p in perimeter]
@@ -316,18 +351,18 @@ end
 function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                           x::Array{T,1}, y::Array{T,1}, z::Array{T,1},
                           glob_yaw::Array{T,1}, perimeter::Array{T, 2},
-                          fdom; optargs...
+                          wake; optargs...
                          ) where{T<:Real}
 
     _perimeter = M2arr(perimeter)
-    return generate_windfarm(D, H, N, x, y, z, glob_yaw, _perimeter, fdom;
+    return generate_windfarm(D, H, N, x, y, z, glob_yaw, _perimeter, wake;
                                                                     optargs...)
 end
 
 function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                           x::Array{T,1}, y::Array{T,1}, z::Array{T,1},
                           glob_yaw::Array{T,1}, perimeter::Array{Array{T, 1}},
-                          fdom;
+                          wake;
                           # TURBINE GEOMETRY OPTIONS
                           hub::Array{String,1}=String[],
                           tower::Array{String,1}=String[],
@@ -337,6 +372,7 @@ function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                           NDIVSx=50, NDIVSy=50, NDIVSz=50,
                           z_min="automatic", z_max="automatic",
                           z_off=0.0,
+                          fdom_perimeter::Union{Array{Array{T, 1}}, Nothing}=nothing,
                           # PERIMETER SPLINE OPTIONS
                           verify_spline::Bool=true,
                           spl_s=0.001, spl_k="automatic",
@@ -353,6 +389,19 @@ function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                                      z_min=z_off, z_max=z_off,
                                       verify_spline=verify_spline, spl_s=spl_s,
                                       spl_k=spl_k, save_path=nothing)
+
+  _zmin = z_min=="automatic" ? 0 : z_min
+  _zmax = z_max=="automatic" ? maximum(H) + 1.25*maximum(D)/2 : z_max
+  fdom = generate_perimetergrid(fdom_perimeter != nothing ? fdom_perimeter : perimeter,
+                                    NDIVSx, NDIVSy, NDIVSz;
+                                    z_min=_zmin+z_off, z_max=_zmax+z_off,
+                                    verify_spline=false,
+                                    spl_s=spl_s, spl_k=spl_k,
+                                    save_path=nothing,
+                                  )
+
+
+  gt.calculate_field(fdom, wake, "wake", "vector", "node")  
 
 
   if save_path!=nothing
