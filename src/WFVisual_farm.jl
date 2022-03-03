@@ -69,7 +69,7 @@ function generate_layout(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                           data_path::String=def_data_path,
                           # FILE OPTIONS
                           save_path=nothing, file_name="windfarm",
-                          paraview=true
+                          paraview=true, rotation_angle=nothing
                          ) where{T<:Real}
 
   nturbines = size(D, 1)        # Number of turbines
@@ -116,14 +116,21 @@ function generate_layout(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
 #end
 
   for i in 1:nturbines
-    N = 200 # pass in from outside
-    rotation_angle = range(0,720,length=N) # pass in from outside
     # Generate wind turbine geometry
-    turbine = generate_windturbine(D[i]/2, H[i], blade[i], hub[i], tower[i];
+    if rotation_angle == nothing
+      turbine = generate_windturbine(D[i]/2, H[i], blade[i], hub[i], tower[i];
                                     nblades=N[i], data_path=data_path,
                                     save_path=nothing, file_name="windturbine", 
-                                    paraview=false, rot=rotation_angle[i], pitch=0,
+                                    paraview=false, random_rot=true, rot=nothing, pitch=0,
                                     time_step=nothing)
+    else
+      turbine = generate_windturbine(D[i]/2, H[i], blade[i], hub[i], tower[i];
+                                    nblades=N[i], data_path=data_path,
+                                    save_path=nothing, file_name="windturbine", 
+                                    paraview=false, random_rot=false, rot=rotation_angle[i], pitch=0,
+                                    time_step=nothing)
+    end
+    
 
     # Places it at the location and orientation
     Oaxis = gt.rotation_matrix(glob_yaw[i], 0, 0)
@@ -131,7 +138,6 @@ function generate_layout(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
 
     # Adds it to the farm
     gt.addgrid(windfarm, "turbine$i", turbine) #grid turbine already exists?
-    end
   end
 
   if save_path!=nothing
@@ -154,7 +160,6 @@ function generate_layout(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
 
   return windfarm::gt.MultiGrid
 end
-println("line 158")
 """
 `generate_perimetergrid(perimeter::Array{Array{T, 1}, 1},
                                   NDIVSx, NDIVSy, NDIVSz;
@@ -183,7 +188,6 @@ function generate_perimetergrid(perimeter::Array{Array{T, 1}, 1},
                                   paraview=true
                                 ) where{T<:Real}
   # Error cases
-  println("line 187")
   multidiscrtype = Array{Tuple{Float64,Int64,Float64,Bool},1}
   if typeof(NDIVSx)==Int64
     nz = NDIVSz
@@ -196,7 +200,6 @@ function generate_perimetergrid(perimeter::Array{Array{T, 1}, 1},
     error("Expected `NDIVSz` to be type $(Int64) or $MultiDiscrType,"*
             " got $(typeof(NDIVSz)).")
   end
-println("line 200")
   # --------- REPARAMETERIZES THE PERIMETER ---------------------------
   org_x = [p[1] for p in perimeter]
   org_y = [p[2] for p in perimeter]
@@ -350,7 +353,7 @@ end
 function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                           x::Array{T,1}, y::Array{T,1}, z::Array{T,1},
                           glob_yaw::Array{T,1}, perimeter::Array{T, 2},
-                          wake; optargs...
+                          fdom; optargs...
                          ) where{T<:Real}
 
     _perimeter = M2arr(perimeter)
@@ -361,7 +364,7 @@ end
 function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                           x::Array{T,1}, y::Array{T,1}, z::Array{T,1},
                           glob_yaw::Array{T,1}, perimeter::Array{Array{T, 1}},
-                          wake;
+                          fdom;
                           # TURBINE GEOMETRY OPTIONS
                           hub::Array{String,1}=String[],
                           tower::Array{String,1}=String[],
@@ -377,36 +380,23 @@ function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                           spl_s=0.001, spl_k="automatic",
                           # FILE OPTIONS
                           save_path=nothing, file_name="mywindfarm",
-                          paraview=false, num=nothing
+                          paraview=false, time_step=nothing, rotation_angle=nothing
                          ) where{T<:Real}
 
   windfarm = generate_layout(D, H, N, x, y, z, glob_yaw;
                                   hub=hub, tower=tower, blade=blade,
-                                  data_path=data_path, save_path=nothing)
+                                  data_path=data_path, save_path=nothing, rotation_angle=rotation_angle)
 
   perimeter_grid = generate_perimetergrid(perimeter, NDIVSx, NDIVSy, 0;
                                      z_min=z_off, z_max=z_off,
                                       verify_spline=verify_spline, spl_s=spl_s,
                                       spl_k=spl_k, save_path=nothing)
 
-  _zmin = z_min=="automatic" ? 0 : z_min
-  _zmax = z_max=="automatic" ? maximum(H) + 1.25*maximum(D)/2 : z_max
-  fdom = generate_perimetergrid(fdom_perimeter != nothing ? fdom_perimeter : perimeter,
-                                    NDIVSx, NDIVSy, NDIVSz;
-                                    z_min=_zmin+z_off, z_max=_zmax+z_off,
-                                    verify_spline=false,
-                                    spl_s=spl_s, spl_k=spl_k,
-                                    save_path=nothing,
-                                  )
-
-
-  gt.calculate_field(fdom, wake, "wake", "vector", "node")  
-
 
   if save_path!=nothing
-    gt.save(windfarm, file_name; path=save_path, num=num, format="vtk")
-    gt.save(perimeter_grid, file_name*"_perimeter"; path=save_path, num=num, format="vtk")
-    gt.save(fdom, file_name*"_fdom"; path=save_path, num=num, format="vtk")
+    gt.save(windfarm, file_name; path=save_path, num=time_step, format="vtk")
+    gt.save(perimeter_grid, file_name*"_perimeter"; path=save_path, num=time_step, format="vtk")
+    gt.save(fdom, file_name*"_fdom"; path=save_path, num=time_step, format="vtk")
 
     if paraview
       strn = ""
@@ -431,12 +421,6 @@ end
 
 function M2arr(M::Array{T, 2}) where{T<:Real}
   return [ [p for p in M[i, :]] for i in 1:size(M,1) ]
-end
-
-function test_function()
-  println("HELLOOOO")
-  println("NEW THING")
-  println("EDIT")
 end
 
 # ------------ END OF WIND FARM ------------------------------------------------
