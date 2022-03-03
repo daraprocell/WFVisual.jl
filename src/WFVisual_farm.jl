@@ -116,8 +116,8 @@ function generate_layout(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
 #end
 
   for i in 1:nturbines
-    N = 200
-    rotation_angle = range(0,720,length=N)
+    N = 200 # pass in from outside
+    rotation_angle = range(0,720,length=N) # pass in from outside
     for j=1:N
     # Generate wind turbine geometry
     turbine = generate_windturbine(D[i]/2, H[i], blade[i], hub[i], tower[i];
