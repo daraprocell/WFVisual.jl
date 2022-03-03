@@ -50,9 +50,9 @@ yaw = [ 0.,  0.,  0.] .- wind_direction
 
 
 # --------------------- PERIMETER AND FLUID DOMAIN -----------------------------
-NDIVSx = 250              # Cells in the parametric x-direction
-NDIVSy = 100              # Cells in the parametric y-direction
-NDIVSz = 25               # Cells in the geometric z-direction
+NDIVSx = 2              # Cells in the parametric x-direction
+NDIVSy = 2            # Cells in the parametric y-direction
+NDIVSz = 1               # Cells in the geometric z-direction
 
 # Dummy perimeter
 Rper = 1500.0
@@ -74,7 +74,7 @@ fdom = wfv.generate_perimetergrid(perimeter_points,
                                   z_min=_zmin+z_off, z_max=_zmax+z_off,
                                   verify_spline=false,
                                   spl_s=spl_s,
-                                  save_path=nothing,
+                                  save_path=nothing
                                 )
 # Guassian wake function
 magVinf = 12.0                          # (m/s) wind speed
@@ -127,6 +127,7 @@ rot_add = 2
 # --------------------- GENERATE WIND FARM -------------------------------------
 x = range(0,100,length=100)
 for i=1:100
+  rotation_angle = [0,59,92]
   rotation_angle = rotation_angle .+ rot_add
   turbine_x[1] = x[i]
   wfv.generate_windfarm(rotor_diameter, hub_height, nBlades,
@@ -134,7 +135,7 @@ for i=1:100
                                 yaw,
                                 perimeter_points, fdom;
                                 NDIVSx=NDIVSx, NDIVSy=NDIVSy, NDIVSz=NDIVSz,
-                                save_path=save_path, spl_s=0.01, rotation_angle=rotation_angle,
+                                save_path=save_path, spl_s=0.01,
                                 data_path=data_path, paraview=false,num=i);
 end
 
