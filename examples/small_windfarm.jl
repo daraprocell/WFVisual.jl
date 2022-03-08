@@ -31,18 +31,20 @@ save_path = "small/"         # Save path of this example
 gt.create_path(save_path, true)
 
 
-
 # --------------------- WIND FARM LAYOUT ---------------------------------------
 turbine_x = [  0.0, 1000.0, -1000.0 ]
 
 turbine_y = [  0.0, 0.0, 0.0]
 turbine_z = [ 0.,  0.,  0.]
 
-hub_height = [ 100.,  100.,  100.]
+# hub_height = [ 100.,  100.,  100.]
+# rotor_diameter = [ 100.,  100.,  100.]
+# nBlades = [3, 3, 3]
 
-rotor_diameter = [ 100.,  100.,  100.]
-
-nBlades = [3, 3, 3]
+nturbs = length(turbine_x)
+hub_height = zeros(nturbs) .+ 100.0
+rotor_diameter = zeros(nturbs) .+ 100.0
+nBlades = zeros(Int8,nturbs) .+ 3
 
 wind_direction = 228.0
 
@@ -57,10 +59,6 @@ NDIVSz = 1               # Cells in the geometric z-direction
 # Dummy perimeter
 Rper = 1500.0
 perimeter_points = Rper.*[ [cos(a), sin(a), 0] for a in range(0, 2*pi, 179)]
-
-# Dummy wake function
-wake(X) = 1.0*[cos(wind_direction*pi/180), sin(wind_direction*pi/180), 0]
-
 
 
 # --------------------- GENERATE FLOW FIELD ------------------------------------
@@ -121,11 +119,12 @@ end
 
 gt.calculate_field(fdom, wake, "wake", "vector", "node")
 
-rotation_angle_start = [0,59,92]
+
+rotation_angle_start = rand(nturbs) .* 360.0
 rot_add = 2
+x = range(0,100,length=100)
 
 # --------------------- GENERATE WIND FARM -------------------------------------
-x = range(0,100,length=100)
 for i=1:100
   rotation_angle = rotation_angle_start .+ rot_add*i
   turbine_x[1] = x[i]
