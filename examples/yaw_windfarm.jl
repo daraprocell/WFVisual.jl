@@ -123,10 +123,14 @@ gt.calculate_field(fdom, wake, "wake", "vector", "node")
 rotation_angle_start = [0,59,92]
 rot_add = 2
 
+yaw_start = [ 30.,  -30.,  0.]
+yaw_add = 2
+
 # --------------------- GENERATE WIND FARM -------------------------------------
 x = range(0,100,length=100)
 for i=1:100
   rotation_angle = rotation_angle_start .+ rot_add*i
+  yaw = yaw_start .+ yaw_add*i
   turbine_x[1] = x[i]
   wfv.generate_windfarm(rotor_diameter, hub_height, nBlades,
                                 turbine_x, turbine_y, turbine_z,
