@@ -32,19 +32,19 @@ gt.create_path(save_path, true)
 
 
 # --------------------- WIND FARM LAYOUT ---------------------------------------
-turbine_x = [ 909.98349606,  1005.0174903 ,   900.40238835,  -479.57607866,
-937.92551703,   461.20472344,   123.06165965, -1073.3529325 ,
--698.76200523, -1083.53094471]
+turbine_x = [ 405.20435818,  633.89371231,  928.20332558, 1252.10240706,
+1884.38199485, 1204.15409295, 1777.25274162,  228.19760716,
+1072.91841174, 1419.05981665] .- 1000
 
-turbine_y = [  500.59889721,  -974.65186327,    76.51586507,  1315.29789208,
-1039.37304649, -1321.85187113,  -300.57817461,  -765.82650713,
--1213.14956771,   886.54973742]
+turbine_y = [4.00826899e+02, 1.65573597e+03, 1.17733070e+03, 1.91209078e+03,
+1.13953462e+03, 1.88146156e+00, 2.87335724e+02, 1.32424102e+03,
+5.49657496e+02, 1.41876751e+03] .- 1000
 
 turbine_z = [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0., 0. ]
 
-hub_height = [ 100.,  100.,  100., 100.,  100.,  100., 100.,  100.,  100., 100. ]
+hub_height = [90.0, 90.0, 90.0, 90.0, 90.0, 90.0, 90.0, 90.0, 90.0, 90.0]
 
-rotor_diameter = [ 100.,  100.,  100., 100.,  100.,  100., 100.,  100.,  100., 100. ]
+rotor_diameter = [126.0, 126.0, 126.0, 126.0, 126.0, 126.0, 126.0, 126.0, 126.0, 126.0]
 
 nBlades = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
 
@@ -54,18 +54,14 @@ yaw = [ 0.,  0.,  0., 0., 0., 0., 0., 0., 0., 0. ] .- wind_direction #direction 
 
 
 # --------------------- PERIMETER AND FLUID DOMAIN -----------------------------
-NDIVSx = 50              # Cells in the parametric x-direction
-NDIVSy = 50            # Cells in the parametric y-direction
-NDIVSz = 50               # Cells in the geometric z-direction
+NDIVSx = 100              # Cells in the parametric x-direction
+NDIVSy = 100            # Cells in the parametric y-direction
+NDIVSz = 25               # Cells in the geometric z-direction
 
 # Dummy perimeter
-Rper = 1500.0
+Rper = 1000.0*sqrt(2)
+println("creating perimeter points")
 perimeter_points = Rper.*[ [cos(a), sin(a), 0] for a in range(0, 2*pi, 179)]
-
-# Dummy wake function
-wake(X) = 1.0*[cos(wind_direction*pi/180), sin(wind_direction*pi/180), 0]
-
-
 
 # --------------------- GENERATE FLOW FIELD ------------------------------------
 
@@ -86,7 +82,7 @@ Vinf_Oaxis = gt.rotation_matrix2(0, 0, wind_direction) # Free-stream coordinate 
 invVinf_Oaxis = Vinf_Oaxis'             # Inverse transformation
 refH = mean(hub_height)                 # (m) reference height for shear layer
 
-
+println("generating wake")
 function wake(X)
 
   k = 0.0325
@@ -123,25 +119,17 @@ function wake(X)
   return Vinf_Oaxis*[ windspeed*(1-loss), 0, 0 ]
 end
 
+
 gt.calculate_field(fdom, wake, "wake", "vector", "node")
 
-rotation_angle_start = [0,59,92, 73, 45, 66, 50, 43, 21, 88]
-rot_add = 2
-
-
 # --------------------- GENERATE WIND FARM -------------------------------------
-x = range(0,100,length=100)
-for i=1:100
-  rotation_angle = rotation_angle_start .+ rot_add*i
-
-  turbine_x[1] = x[i]
-  wfv.generate_windfarm(rotor_diameter, hub_height, nBlades,
-                                turbine_x, turbine_y, turbine_z,
-                                yaw,
-                                perimeter_points, fdom;
-                                NDIVSx=NDIVSx, NDIVSy=NDIVSy, NDIVSz=NDIVSz,
-                                save_path=save_path, spl_s=0.01,
-                                data_path=data_path, paraview=false,time_step=i,rotation_angle=rotation_angle);
-end
+println("generating geometry")
+wfv.generate_windfarm(rotor_diameter, hub_height, nBlades,
+                              turbine_x, turbine_y, turbine_z,
+                              yaw,
+                              perimeter_points, fdom;
+                              NDIVSx=NDIVSx, NDIVSy=NDIVSy, NDIVSz=NDIVSz,
+                              save_path=save_path, spl_s=0.01,
+                              data_path=data_path, paraview=false);
 
 nothing
