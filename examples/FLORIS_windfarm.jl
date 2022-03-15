@@ -26,32 +26,37 @@ data_path = joinpath(module_path, "../datav07/")
 #end
 
 # Create save path where to store vtks
-save_path = "small/"         # Save path of this example
+save_path = "FLORIS/"         # Save path of this example
 gt.create_path(save_path, true)
 
 
 
 # --------------------- WIND FARM LAYOUT ---------------------------------------
-turbine_x = [  0.0, 1000.0, -1000.0 ]
+turbine_x = [ 909.98349606,  1005.0174903 ,   900.40238835,  -479.57607866,
+937.92551703,   461.20472344,   123.06165965, -1073.3529325 ,
+-698.76200523, -1083.53094471]
 
-turbine_y = [  0.0, 0.0, 0.0]
-turbine_z = [ 0.,  0.,  0.]
+turbine_y = [  500.59889721,  -974.65186327,    76.51586507,  1315.29789208,
+1039.37304649, -1321.85187113,  -300.57817461,  -765.82650713,
+-1213.14956771,   886.54973742]
 
-hub_height = [ 100.,  100.,  100.]
+turbine_z = [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0., 0. ]
 
-rotor_diameter = [ 100.,  100.,  100.]
+hub_height = [ 100.,  100.,  100., 100.,  100.,  100., 100.,  100.,  100., 100. ]
 
-nBlades = [3, 3, 3]
+rotor_diameter = [ 100.,  100.,  100., 100.,  100.,  100., 100.,  100.,  100., 100. ]
+
+nBlades = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
 
 wind_direction = 270.0
 
-yaw = [ 30.,  -30.,  0.] .- wind_direction #direction against wind. We want it yawing back and forth
+yaw = [ 0.,  0.,  0., 0., 0., 0., 0., 0., 0., 0. ] .- wind_direction #direction against wind. We want it yawing back and forth
 
 
 # --------------------- PERIMETER AND FLUID DOMAIN -----------------------------
-NDIVSx = 2              # Cells in the parametric x-direction
-NDIVSy = 2            # Cells in the parametric y-direction
-NDIVSz = 1               # Cells in the geometric z-direction
+NDIVSx = 50              # Cells in the parametric x-direction
+NDIVSy = 50            # Cells in the parametric y-direction
+NDIVSz = 50               # Cells in the geometric z-direction
 
 # Dummy perimeter
 Rper = 1500.0
@@ -120,17 +125,15 @@ end
 
 gt.calculate_field(fdom, wake, "wake", "vector", "node")
 
-rotation_angle_start = [0,59,92]
+rotation_angle_start = [0,59,92, 73, 45, 66, 50, 43, 21, 88]
 rot_add = 2
 
-yaw_start = [ 30.,  -30.,  0.]
-yaw_add = 2
 
 # --------------------- GENERATE WIND FARM -------------------------------------
 x = range(0,100,length=100)
 for i=1:100
   rotation_angle = rotation_angle_start .+ rot_add*i
-  yaw = yaw_start .+ yaw_add*i
+
   turbine_x[1] = x[i]
   wfv.generate_windfarm(rotor_diameter, hub_height, nBlades,
                                 turbine_x, turbine_y, turbine_z,
