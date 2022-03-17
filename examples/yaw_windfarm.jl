@@ -123,15 +123,24 @@ gt.calculate_field(fdom, wake, "wake", "vector", "node")
 rotation_angle_start = [0,59,92]
 rot_add = 2
 
-yaw_start = [ 30.,  -30.,  0.]
-yaw_add = 2
+yaw_start = [-30., -30., -30.]
+yaw_min = [-30., -30., -30.]
+yaw_max = [30., 30., 30.]
+yaw_add = 4.
+direction = 1.
+yaw = yaw_start
 
 # --------------------- GENERATE WIND FARM -------------------------------------
 x = range(0,100,length=100)
-for i=1:100
-  rotation_angle = rotation_angle_start .+ rot_add*i
-  yaw = yaw_start .+ yaw_add*i
-  turbine_x[1] = x[i]
+for i=1:100 # Time range (100 time steps)
+  rotation_angle = rotation_angle_start .+ rot_add*i # rotating turbine every time step
+  global yaw = yaw .+ yaw_add*direction
+  if yaw <= yaw_min
+    global direction = 1. 
+  elseif yaw >= yaw_max
+    direction = -1. 
+  end
+
   wfv.generate_windfarm(rotor_diameter, hub_height, nBlades,
                                 turbine_x, turbine_y, turbine_z,
                                 yaw,
@@ -139,6 +148,7 @@ for i=1:100
                                 NDIVSx=NDIVSx, NDIVSy=NDIVSy, NDIVSz=NDIVSz,
                                 save_path=save_path, spl_s=0.01,
                                 data_path=data_path, paraview=false,time_step=i,rotation_angle=rotation_angle);
+
 end
 
 nothing
