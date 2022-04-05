@@ -24,7 +24,7 @@ else                                                # Case of Julia v0.7
 end
 
 # Create save path where to store vtks
-save_path = "temps/windfarmgauss00/"         # Save path of this example
+save_path = "temp/windfarmgauss00/"         # Save path of this example
 gt.create_path(save_path, true)
 
 
@@ -62,7 +62,7 @@ nBlades = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 wind_direction = 228.0
 
 yaw = [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
-        0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.] - wind_direction
+        0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.] .- wind_direction
 
 
 # --------------------- PERIMETER AND FLUID DOMAIN -----------------------------
@@ -72,7 +72,7 @@ NDIVSz = 70              # Cells in the geometric z-direction
 
 # Circular wind farm perimeter
 Rper = norm(maximum.([turbine_x, turbine_y]) - minimum.([turbine_x, turbine_y]))/2*3/4
-perimeter_points = Rper*[ [cos(a), sin(a), 0] for a in linspace(0, 2*pi, 179)]
+perimeter_points =  Rper.*[ [cos(a), sin(a), 0] for a in range(0, 2*pi, 179)] #Rper*[ [cos(a), sin(a), 0] for a in linspace(0, 2*pi, 179)]
 
 # Guassian wake function
 magVinf = 12.0                          # (m/s) wind speed
@@ -111,7 +111,7 @@ function wake(X)
 
     windspeed= magVinf
     # Uncomment this line adds the shear layer
-    # windspeed *= (X[3]/refH)^alpha
+    windspeed *= (X[3]/refH)^alpha
 
     # Return velocity vector in global coordinate system
     return Vinf_Oaxis*[ windspeed*(1-loss), 0, 0 ]
