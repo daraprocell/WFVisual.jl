@@ -18,13 +18,13 @@ wfvisual_path = os.path.join(module_path, '..', 'src', 'WFVisual.jl')
 jl.eval('include(\"'+wfvisual_path+'\")')
 
 # Print Julia version for information
-jl.versioninfo()
+#jl.versioninfo()
 
 # Data path with geometry JLDs
 data_path = os.path.join(module_path, '..', 'datav07')
 
 # Create save path where to store vtks
-save_path = os.path.join(module_path, '..', 'temps', 'pywindfarm00')
+save_path = os.path.join(module_path, 'python_example')
 
 if os.path.isdir(save_path):
     os.rmdir(save_path)
