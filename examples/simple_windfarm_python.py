@@ -17,14 +17,11 @@ module_path = os.path.dirname(os.path.abspath(__file__))
 wfvisual_path = os.path.join(module_path, '..', 'src', 'WFVisual.jl')
 jl.eval('include(\"'+wfvisual_path+'\")')
 
-# Print Julia version for information
-jl.versioninfo()
-
 # Data path with geometry JLDs
 data_path = os.path.join(module_path, '..', 'datav07')
 
 # Create save path where to store vtks
-save_path = os.path.join(module_path, '..', 'temps', 'pywindfarm00')
+save_path = os.path.join(module_path, 'python_example')
 
 if os.path.isdir(save_path):
     os.rmdir(save_path)
@@ -69,9 +66,9 @@ yaw = np.array([ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
 
 
 # --------------------- PERIMETER AND FLUID DOMAIN -----------------------------
-NDIVSx = 70              # Cells in the parametric x-direction
-NDIVSy = 70              # Cells in the parametric y-direction
-NDIVSz = 70              # Cells in the geometric z-direction
+NDIVSx = 2              # Cells in the parametric x-direction
+NDIVSy = 2              # Cells in the parametric y-direction
+NDIVSz = 2              # Cells in the geometric z-direction
 
 # Dummy perimeter
 xlo = np.array([min(turbine_x), min(turbine_y)])
