@@ -17,6 +17,9 @@ module_path = os.path.dirname(os.path.abspath(__file__))
 wfvisual_path = os.path.join(module_path, '..', 'src', 'WFVisual.jl')
 jl.eval('include(\"'+wfvisual_path+'\")')
 
+# Print Julia version for information
+#jl.versioninfo()
+
 # Data path with geometry JLDs
 data_path = os.path.join(module_path, '..', 'datav07')
 

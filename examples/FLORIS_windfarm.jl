@@ -12,7 +12,9 @@ using LinearAlgebra
 # Load WFVisual module
 import WFVisual
 using Statistics
+import floris
 wfv=WFVisual
+
 
 # Load GeometricTools: https://github.com/byuflowlab/GeometricTools.jl
 import GeometricTools
@@ -50,7 +52,7 @@ nBlades = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
 
 wind_direction = 270.0
 
-yaw = [ 0.,  0.,  0., 0., 0., 0., 0., 0., 0., 0. ] .- wind_direction #direction against wind. We want it yawing back and forth
+yaw = [ 0.,  0.,  0., 0., 0., 0., 0., 0., 0., 0. ] .- wind_direction #direction against wind
 
 
 # --------------------- PERIMETER AND FLUID DOMAIN -----------------------------
