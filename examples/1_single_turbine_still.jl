@@ -20,7 +20,7 @@ gt=GeometricTools
 data_path = joinpath(module_path, "../datav07/")
 
 # Create save path where to store vtks
-save_path = "single/"         # Save path of this example
+save_path = "example_1_still/"         # Save path of this example
 gt.create_path(save_path, true)
 
 # --------------------- WIND FARM LAYOUT ---------------------------------------
@@ -39,12 +39,12 @@ wind_direction = 228.0
 yaw = [0.0] .- wind_direction
 
 # --------------------- PERIMETER AND FLUID DOMAIN -----------------------------
-NDIVSx = 2              # Cells in the parametric x-direction
-NDIVSy = 2            # Cells in the parametric y-direction
-NDIVSz = 1               # Cells in the geometric z-direction
+NDIVSx = 100              # Cells in the parametric x-direction
+NDIVSy = 100            # Cells in the parametric y-direction
+NDIVSz = 25               # Cells in the geometric z-direction
 
 # Dummy perimeter
-Rper = 1500.0
+Rper = 1000.0
 perimeter_points = Rper.*[ [cos(a), sin(a), 0] for a in range(0, 2*pi, 179)]
 
 
@@ -109,21 +109,13 @@ end
 gt.calculate_field(fdom, wake, "wake", "vector", "node")
 
 
-rotation_angle_start = rand(nturbs) .* 360.0
-rot_add = 2
-x = range(0,100,length=100)
-
 # --------------------- GENERATE WIND FARM -------------------------------------
-for i=1:100
-  rotation_angle = rotation_angle_start .+ rot_add*i
-  turbine_x[1] = x[i]
-  wfv.generate_windfarm(rotor_diameter, hub_height, nBlades,
-                                turbine_x, turbine_y, turbine_z,
-                                yaw,
-                                perimeter_points, fdom;
-                                NDIVSx=NDIVSx, NDIVSy=NDIVSy, NDIVSz=NDIVSz,
-                                save_path=save_path, spl_s=0.01,
-                                data_path=data_path, paraview=false,time_step=i,rotation_angle=rotation_angle);
-end
+wfv.generate_windfarm(rotor_diameter, hub_height, nBlades,
+                              turbine_x, turbine_y, turbine_z,
+                              yaw,
+                              perimeter_points, fdom;
+                              NDIVSx=NDIVSx, NDIVSy=NDIVSy, NDIVSz=NDIVSz,
+                              save_path=save_path, spl_s=0.01,
+                              data_path=data_path, paraview=false);
 
 nothing
