@@ -166,7 +166,7 @@ end
                                   NDIVSx, NDIVSy, NDIVSz;
                                   z_min::Real=0, z_max::Real=0,
                                   # SPLINE OPTIONS
-                                  verify_spline::Bool=true,
+                                  verify_spline::Bool=false,
                                   spl_s=0.001, spl_k="automatic",
                                   # FILE OPTIONS
                                   save_path=nothing, file_name="perimeter",
@@ -182,7 +182,7 @@ function generate_perimetergrid(perimeter::Array{Array{T, 1}, 1},
                                   NDIVSx, NDIVSy, NDIVSz;
                                   z_min::Real=0, z_max::Real=0,
                                   # SPLINE OPTIONS
-                                  verify_spline::Bool=true,
+                                  verify_spline::Bool=false,
                                   spl_s=0.001, spl_k="automatic", atol=1.0,
                                   # FILE OPTIONS
                                   save_path=nothing, file_name="perimeter",
@@ -377,7 +377,7 @@ function generate_windfarm(D::Array{T,1}, H::Array{T,1}, N::Array{Int64,1},
                           z_off=0.0,
                           fdom_perimeter::Union{Array{Array{T, 1}}, Nothing}=nothing,
                           # PERIMETER SPLINE OPTIONS
-                          verify_spline::Bool=true,
+                          verify_spline::Bool=false,
                           spl_s=0.001, spl_k="automatic",
                           # FILE OPTIONS
                           save_path=nothing, file_name="mywindfarm",

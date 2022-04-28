@@ -145,7 +145,7 @@ end
                         tilt_z=nothing,
                         # SPLINE OPTIONS
                         spline_k::Int64=5, spline_bc::String="extrapolate",
-                        spline_s::Real=0.001, verify_spline::Bool=true,
+                        spline_s::Real=0.001, verify_spline::Bool=false,
                         # OUTPUT OPTIONS
                         save_path=nothing, paraview::Bool=true,
                         file_name::String="myloft"
@@ -190,7 +190,7 @@ function generate_loft(bscale::Real, b_low::Real, b_up::Real, b_NDIVS::Int64,
                         tilt_z=nothing,
                         # SPLINE OPTIONS
                         spline_k::Int64=5, spline_bc::String="extrapolate",
-                        spline_s::Real=0.001, verify_spline::Bool=true,
+                        spline_s::Real=0.001, verify_spline::Bool=false,
                         # OUTPUT OPTIONS
                         save_path="/Users/dprocell/WF/files", paraview::Bool=true,
                         file_name::String="myloft"
